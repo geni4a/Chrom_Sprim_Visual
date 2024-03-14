@@ -1,6 +1,6 @@
 # Chrom_Sprim_Visual
 ## Packages that need to be installed
-Bokeh
+Bokeh \n
 Pandas
 Numpy
 Os
