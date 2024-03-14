@@ -2,7 +2,7 @@ from bokeh.io import curdoc
 from bokeh.plotting import figure
 from bokeh.models import BoxAnnotation, Button, TapTool, Div
 from bokeh.layouts import column
-import math
+import numpy as np 
 
 
 # Define constants
@@ -95,7 +95,7 @@ def tap_callback(event):
         highlight_box_chr1.visible = False
         highlight_box_chr2.visible = False
         highlight_box_ov.visible = False
-        textbox.text = f"Selected part of Chromosome 2: {selected_index}, {math.floor(selected_index)}"
+        textbox.text = f"Selected part of Chromosome 2: {selected_index}, {np.floor(selected_index)}"
 
 
 
@@ -164,8 +164,8 @@ def is_within_any_bounds(number, bounds_list):
     return False
 
 def is_within_any_bounds2(number, bounds_list):
-    q = math.ceil(number) #5 #6
-    m = math.floor(number) #4 #5
+    q = np.ceil(number) #5 #6
+    m = np.floor(number) #4 #5
     p = q-0.5
     x = float("inf")
     if number > p:
