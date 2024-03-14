@@ -20,8 +20,8 @@ export PATH=/path/to/directory:$PATH
 ```
 
 ## If not using own files
-Clone repository
-Locate directory 
+- Clone repository
+- Locate directory 
 
 type 
 ```
