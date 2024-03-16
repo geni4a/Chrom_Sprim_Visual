@@ -3,8 +3,7 @@ from bokeh.layouts import row, column
 from bokeh.models import Button, Div
 from snp_lookup import ret_s
 from chrom_vis import ret2
-from overlap_lookup import ret_ov, pare_og
-
+from overlap_lookup import ret_ov
 
 
 # Initialize a list to keep track of added components
@@ -48,34 +47,39 @@ button_circle.on_click(toggle_circle)
 button_ov = Button(label="Overlap Lookup")
 button_ov.on_click(ove)
 
-
-
+# Arrange buttons in a row layout
 button_row = row(button_rectangle, button_circle,button_ov,clear_button)
-    # Arrange buttons and Div widget in a column layout
+
+# Arrange buttons and Div widget in a column layout
+
 layout = column(button_row)
+# Add the layout to the document
 
 
 
 def go():
     user_input = input("Will you be submitting your own files? Enter Y or N:")
-    while user_input != "N" and user_input != "Y":
-        print("Incorrect output")
-        user_input = input("Will you be submitting your own files? Enter Y or N:")
     if user_input == "N":
-        pare_og(True)
+        curdoc().add_root(layout)
     elif user_input == "Y":
         print("Ensure your files are in the appropriate format according to README")
-        print("Ensure your next inputs are from having run the preprocessing file")
         input1 = input("Enter path to directory containing Sprime outputs")
         input2 = input("Enter path to json file containing names of populations")
-        pare_og(False, input1, input2)
-# Add the layout to the document
-    curdoc().add_root(layout)
+    else:
+        print("Incorrect output.")
+
+go()
+
       
 
 
-#if using own files, let them run the preprocessing file (write the jupyter notebook) and post
-go()
+
+
+
+
+
+
+
 
 
 

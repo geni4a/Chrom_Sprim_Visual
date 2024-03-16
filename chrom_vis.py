@@ -1,6 +1,6 @@
 from bokeh.io import curdoc
 from bokeh.plotting import figure
-from bokeh.models import BoxAnnotation, Button, TapTool, Div
+from bokeh.models import BoxAnnotation, Button, TapTool, Div, Select
 from bokeh.layouts import column
 import numpy as np 
 
@@ -200,7 +200,18 @@ next_button.on_click(next_button_callback)
 
 previous_button = Button(label="Previous", button_type="success")
 previous_button.on_click(previous_button_callback)
-interface2 = column(textbox, p, next_button, previous_button)
+
+def dropdown_callback(attr, old, new):
+    global selected_number
+    selected_number = int(new)
+
+options = [str(i) for i in range(1, 23)]  # Convert numbers to strings
+dropdown = Select(title="Select chromosome number:", value=options[0], options=options)
+
+# Attach the callback function to the 'value' property of the dropdown
+dropdown.on_change('value', dropdown_callback)
+
+interface2 = column(textbox, p, next_button, previous_button,dropdown)
 
 def ret2():
     return interface2

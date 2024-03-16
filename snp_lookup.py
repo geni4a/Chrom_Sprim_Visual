@@ -23,7 +23,7 @@ def update_list():
 # Function to process the input and generate DataFrame
 def process_input(input_text):
     # Simulate a delay to demonstrate loading
-    time.sleep(2)
+    # time.sleep(2)
     paragraph.text = generate_dataframe(input_text)
     loading_message.visible = False
 

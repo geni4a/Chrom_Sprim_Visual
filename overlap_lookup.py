@@ -3,33 +3,21 @@ from bokeh.io import curdoc
 from bokeh.models import TextInput, Button, Div, Select
 from bokeh.layouts import column
 import pandas as pd
-import pickle
+from utils import create_og, create_new
 
 
 selected_number = 1
-save_to = "/Users/eugeniaampofo/Downloads/Downloads/Vis_files/"
-populations = ['ITU',
- 'CHB',
- 'CHS',
- 'STU',
- 'MXL',
- 'CEU',
- 'GIH',
- 'IBS',
- 'KHV',
- 'GBR',
- 'TSI',
- 'PEL',
- 'FIN',
- 'BEB',
- 'CLM',
- 'JPT',
- 'PUR',
- 'CDX',
- 'PJL',
- 'Papuans']
-# path = save_to + 'popdataf.pkl'  # dictionary that maps population to dataframe
-path2 = save_to + 'ov_num_df.pkl'  # dictionary that maps chromosome to dataframe with all populations
+populations = []
+lok = {}
+
+
+def pare_og(boo, input=None, js=None):
+    global populations, lok
+    if boo: 
+        populations, lok = create_og()
+    else:
+        populations, lok = create_new(input, js)
+
 
 def update_list():
     input_text = text_input.value
@@ -50,10 +38,6 @@ def process_input(input_text):
     paragraph.text += m_t + "<br>"
     paragraph.text += c+ "<br>"
     paragraph.text += d+ "<br>"
-
-
-
-    
     loading_message.visible = False
 
 def second_largest_value_and_column(row_label,df):
@@ -68,8 +52,6 @@ def generate_dataframe(input_text):
     if input_text not in populations:
         return "Invalid input"
     # Sample DataFrame (replace this with your own)
-    with open(path2, 'rb') as json_file:
-        lok = pickle.load(json_file)
     df1 = lok[selected_number]
     filtered_df = df1
     col, val = second_largest_value_and_column(input_text, df1)
@@ -84,7 +66,8 @@ def generate_dataframe(input_text):
         html_table += "</tr>"
     html_table += "</table>"
     row_series = filtered_df.loc[input_text]
-    row_df = row_series.to_frame().T   
+    row_series_sorted = row_series.sort_values(ascending=False)
+    row_df = row_series_sorted.to_frame().T   
     row_html = row_df.to_html(index=True)
     return col, val,row_html, html_table
 
@@ -122,3 +105,4 @@ interface1 = column(text_input, button, dropdown, loading_message, paragraph)
 
 def ret_ov():
     return interface1
+  
