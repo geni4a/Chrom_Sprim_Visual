@@ -92,8 +92,8 @@ chromosome_height= 10
 part_width_chr1 = 100
 criteria_regions_1 = df1
 df1_lst = inbet(df1)
-print(df1[:5])
-print(df1_lst[:5])
+# print(df1[:5])
+# print(df1_lst[:5])
 # print(ldjf)
 # print(mini_chr1)
 # print(maxi_chr1)

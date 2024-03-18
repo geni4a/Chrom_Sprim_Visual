@@ -37,7 +37,7 @@ def toggle_chromvis():
 def clear_layout():
   if added_components:
     removed_component = added_components.pop()
-    print("S")
+    print(removed_component)
     layout.children.remove(removed_component)
     
 from overlap_lookup import ret_ov

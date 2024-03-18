@@ -53,9 +53,8 @@ def generate_dataframe(input_text, chrom):
             df3 = [list(x) for x in df3]
             df3 = [[str(x) for x in y] for y in df3]
             elet = ["-".join(x) for x in df3]
-            df3 = df2[df2['minmax'].isin(elet)]
-            print(df3)
-            filtered_df2 = pd.concat([filtered_df2, df3], ignore_index=True)
+            df4 = df2[df2['minmax'].isin(elet)]
+            filtered_df2 = pd.concat([filtered_df2, df4], ignore_index=True)
 
     if filtered_df.empty:
         return "None Found"
