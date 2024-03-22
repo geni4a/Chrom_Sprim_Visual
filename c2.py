@@ -14,15 +14,51 @@ from bokeh.plotting import figure
 from bokeh.models import BoxAnnotation, Button, TapTool, Div, Select, TextInput
 from bokeh.layouts import column
 import numpy as np 
-from utils import populations, lok, pop_segment_dict, pop_chrom_dict, ov_dict
+import pickle
+# sprime_files = "/Users/eugeniaampofo/Downloads/Downloads/Sprime_files/Sprime_res/"
+save_to ="/Users/eugeniaampofo/Downloads/Downloads/Vis_files/"
+save_to = "/Users/eugeniaampofo/Downloads/Downloads/Vis_files/"
+# path2 = save_to + 'ov_num_df.pkl'  # dictionary that maps chromosome to dataframe with all populations
+path2 = save_to + 'ov_num_dict.pkl'
+path3 = save_to + 'popdataf.pkl'  # dictionary that maps population to dataframe
+path4 = save_to + 'pop_chrom_dict.pkl'  # dictionary that maps chromosome to dataframe with all populations
+# path5 = save_to + "pop_segment_dict.pkl"
+path5 = save_to + "concatenated_dict.pkl"
+path6 = save_to + "ov_dict.pkl"
 
 
+lok = {}
+pop_chrom_dict = {}
+popdataf ={}
+pop_segment_dict = {}
+ov_dict = {}
+
+
+def create_og():
+    global populations, lok, pop_chrom_dict, popdataf, pop_segment_dict, ov_dict
+    populations = ['ITU','CHB','CHS','STU','MXL','CEU','GIH','IBS','KHV','GBR','TSI','PEL','FIN','BEB','CLM','JPT','PUR','CDX','PJL', 'Papuans']
+    with open(path2, 'rb') as jsonf:
+        lok = pickle.load(jsonf)
+    with open(path4, 'rb') as json_file:
+        pop_chrom_dict = pickle.load(json_file)
+    with open(path3, 'rb') as json_file:
+        popdataf = pickle.load(json_file)
+    with open(path5, 'rb') as json_file:
+        pop_segment_dict = pickle.load(json_file)
+    with open(path6, 'rb') as json_file:
+        ov_dict = pickle.load(json_file)
+    return populations, lok, pop_chrom_dict, popdataf, pop_segment_dict, ov_dict
+
+create_og()
+
+p = figure(width=800, height=200, title="Variant Sharing")
 
 df1 = None
 df2 = None
 df11 = None
 df22 = None
 overlapse = None
+overlapse11 = None
 mode = None
 denom = None
 
@@ -44,39 +80,47 @@ def inbet(original_list):
 def process_input(input_text1, chrome, mode):
     global df1, df2, overlapse, df11, df22, denom
     k = input_text1.split(",")
+    pair = "-".join(sorted(k))
+    print(pair)
+
+
     if k[0] and k[1] not in populations:
         return "Invalid input: one or both populations are incorrect!"
     chrom = int(chrome)
+    overlapse = ov_dict[pair]
+    overlapse = overlapse.loc[overlapse["CHROM"] == chrom]
     if mode == "individual segments":
         print(k[0])
         df1 = pop_chrom_dict[chrom][k[0]]
-        print(df1)
+        # print(df1)
         df2 = pop_chrom_dict[chrom][k[0]]
     else:
-        pair = "-".join(sorted(k))
-        print(pair)
-        overlapse = ov_dict[pair]
-        overlapse = overlapse.loc[overlapse["CHROM" == chrom]]
-
         df1 = overlapse
         df2 = overlapse
+
+
 def avg_len(lst):
     co = 0
     for tup in lst:
         co += tup[1]-tup[0]
     return co/len(lst)
 
-p = figure(width=800, height=200, title="Variant Sharing")
+mode = "individual segments"
+process_input("GIH,TSI", "21", "individual segments")
+
+df11 = df1[["CHROM","START", "END"]]
+
+df11 = df11.drop_duplicates(subset=['CHROM', 'START', 'END'])
+print(df11)
+df11 = list(zip(df11["START"], df11["END"]))
+df22 = df2.drop_duplicates(subset=['CHROM', 'START', 'END'])
+df22 = list(zip(df22["START"], df22["END"]))
+overlapse = list(zip(overlapse["START"], overlapse["END"]))
+denom = np.mean([avg_len(df11), avg_len(df22), avg_len(overlapse)])
 
 
-# mode = "individual segments"
-# process_input("GIH,TSI", "21", "individual segments")
 # print(df1)
 
-def make_df():
-    df11 = list(zip(df1["START"], df1["END"]))
-    df22 = list(zip(df2["START"], df2["END"]))
-    denom = np.mean([avg_len(df11), avg_len(df22), avg_len(overlapse)])
 
 
 
@@ -110,7 +154,7 @@ def define_constants():
     view_start = 1
     view_end = increment
     # Create Bokeh figure
-    p.xaxis.ticker = [i for i in range(view_start, view_end)]
+    # p.xaxis.ticker = [i for i in range(view_start, view_end)]
     # Create BoxAnnotations to highlight the selected regions for each chromosome
     highlight_box_chr1 = BoxAnnotation(left=mini_chr1, right=maxi_chr1, top=5, bottom=-5,
                                     line_color='black', line_width=2, line_alpha=0.5,
@@ -125,7 +169,7 @@ def define_constants():
 
    
 
-
+define_constants()
 
 # Create the HTML component with the layout
 textbox_layout = """
@@ -159,8 +203,8 @@ def update_display():
     maxi_chr1 = view_end
     mini_chr2 = view_start
     maxi_chr2 = view_end
-    print(view_start)
-    print(view_end)
+    # print(view_start)
+    # print(view_end)
 
     count = 0
     for tup in range(len(df1)):
@@ -237,4 +281,5 @@ def ret2():
     # define_constants()
     return interface2
 
+curdoc().add_root(ret2())
 

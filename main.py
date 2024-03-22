@@ -13,10 +13,11 @@ if user_input == "N":
     pare_og(True)
 elif user_input == "Y":
     print("Ensure your files are in the appropriate format according to README")
-    print("Ensure your next inputs are from having run the preprocessing file")
-    input1 = input("Enter path to directory containing Sprime outputs")
-    input2 = input("Enter path to json file containing names of populations")
-    pare_og(False, input1, input2)
+    print("Ensure your next inputs are in correct format. Check with README")
+    input1 = input("Enter path to directory containing Sprime outputs: ")
+    input2 = input("Enter path to json file containing names of populations: ")
+    input3 = input("Enter path to save inbetween files: ")
+    pare_og(False, input1,input3, input2)
 
 # Initialize a list to keep track of added components
 added_components = []
@@ -80,26 +81,11 @@ layout = column(button_row)
 
 
 
-# def go():
-#     user_input = input("Will you be submitting your own files? Enter Y or N:")
-#     while user_input != "N" and user_input != "Y":
-#         print("Incorrect output")
-#         user_input = input("Will you be submitting your own files? Enter Y or N:")
-#     if user_input == "N":
-#         pare_og(True)
-#     elif user_input == "Y":
-#         print("Ensure your files are in the appropriate format according to README")
-#         print("Ensure your next inputs are from having run the preprocessing file")
-#         input1 = input("Enter path to directory containing Sprime outputs")
-#         input2 = input("Enter path to json file containing names of populations")
-#         pare_og(False, input1, input2)
+
 # Add the layout to the document
 curdoc().add_root(layout)
       
 
-
-#if using own files, let them run the preprocessing file (write the jupyter notebook) and post
-# go()
 
 
 
