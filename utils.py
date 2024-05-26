@@ -3,7 +3,7 @@ from Further_prop import make_files
 import pickle
 
 # save_to ="/Users/eugeniaampofo/Downloads/Downloads/Vis_files/"
-save_to = "/Users/eugeniaampofo/Downloads/Downloads/Sprime_files/visual/CHROM_VISUAL/Jupyter_Deliverables/data_files/"
+save_to = "/Users/eugeniaampofo/Downloads/Downloads/Sprime_files/visual/Chrom_Visual/Jupyter_Deliverables/data_files/"
 # path2 = save_to + 'ov_num_df.pkl'  # dictionary that maps chromosome to dataframe with all populations
 path2 = save_to + 'ov_num_dict.pkl'
 path3 = save_to + 'pop_dataf.pkl'  # dictionary that maps population to dataframe
@@ -26,7 +26,7 @@ ov_full_df = None
 
 
 def create_og():
-    global populations, lok, pop_chrom_dict, popdataf, concatentated_dict, ov_dict, ov_full_df
+    global populations, lok, pop_chrom_dict, popdataf, concatenated_dict, ov_dict, ov_full_df
     populations = ['ITU','CHB','CHS','STU','MXL','CEU','GIH','IBS','KHV','GBR','TSI','PEL','FIN','BEB','CLM','JPT','PUR','CDX','PJL', 'Papuans']
     with open(path2, 'rb') as jsonf:
         lok = pickle.load(jsonf)
@@ -35,7 +35,7 @@ def create_og():
     with open(path3, 'rb') as json_file:
         popdataf = pickle.load(json_file)
     with open(path5, 'rb') as json_file:
-        concatentated_dict = pickle.load(json_file)
+        concatenated_dict = pickle.load(json_file)
     with open(path6, 'rb') as json_file:
         ov_dict = pickle.load(json_file)
     with open(path7, "rb") as json_file:
@@ -73,7 +73,9 @@ def add_on2(df1,df2):
                     
 
 def addy(k):
-    global concatenated_dict
+    global concatenated_dict, ov_dict
+    print(concatenated_dict.keys())
+    # print(ov_dict.keys())
     df1 = concatenated_dict[k[0]]
     df2 = concatenated_dict[k[1]]
     ov = ov_dict['-'.join(k)]

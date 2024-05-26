@@ -3,7 +3,7 @@ from bokeh.plotting import figure
 from bokeh.models import BoxAnnotation, Button, TapTool, Div, Select, TextInput
 from bokeh.layouts import column
 import numpy as np 
-from utils import populations, ov_dict, pop_chrom_dict, concatenated_dict, addy, flatten_and_sort_lists
+from utils import populations, pop_chrom_dict,addy, flatten_and_sort_lists
 import pandas as pd
 
 
@@ -17,7 +17,7 @@ df1 = None
 df2 = None
 criteria_regions_1 = None
 criteria_regions_2 = None
-
+end_part = None
 chromosome_width = 10
 increment = 50
 
@@ -25,15 +25,20 @@ view_start = -50
 view_end = 0
 # Create Bokeh figure
 p = figure(width=1000, height=400, title="Variant Sharing")
+p.visible = False
 
 # Create lists to store colors for each part of the chromosome
 colors_chr1 = []
 colors_chr2 = []
 
 paragraph = Div()
+paragraph2 = Div()
+paragraph2.visible = False
+
+print(f"populatioons: {populations}")
 
 def update_list():
-    global mode, name, selected_number, df1, df2, df_ov, df11, df22
+    global mode, name, selected_number, df1, df2, criteria_regions_1, criteria_regions_2, end_part
     input_text = text_input.value
     try:
         paragraph.visible = False
@@ -42,26 +47,43 @@ def update_list():
         if name[0] not in populations or name[1] not in populations:
             paragraph.text = "Invalid input. Try again!"
             paragraph.visible = True
+            paragraph2.visible = False
+            p.visible = False
+            next_button.visible = False
+            previous_button.visible = False
         else:
             paragraph.visible = False
             if mode == "individual segments":
-                print("hello")
-                df1 = pop_chrom_dict[selected_number][name[0]]
-                df2 = pop_chrom_dict[selected_number][name[1]]
-                df11 = df1[["CHROM","START", "END"]].drop_duplicates(subset=['CHROM', 'START', 'END'])
-                df22 = df2[["CHROM","START", "END"]].drop_duplicates(subset=['CHROM', 'START', 'END'])
-           
-    except:
+                nam_tup = tuple(name)
+                ov, df1, df2 = addy(nam_tup)
+                df1 = df1.drop_duplicates(subset=['CHROM', 'START', 'END'])
+                df2 = df2.drop_duplicates(subset=['CHROM', 'START', 'END'])
+                df1 = df1.loc[df1["CHROM"] == selected_number]
+                df2 = df2.loc[df2["CHROM"] == selected_number]
+                df1 = list(zip(df1['START'], df1['END']))
+                df2 = list(zip(df2['START'], df2['END']))
+                criteria_regions_1 = sorted([(x/1000000, y/1000000) for x,y in df1])
+                criteria_regions_2 = sorted([(x/1000000, y/1000000) for x,y in df2])
+                q = flatten_and_sort_lists(criteria_regions_1, criteria_regions_2)
+                end_part = q[-1] # maximum chromosome value for both chromosomes
+                paragraph2.text = "Done Loading"
+                paragraph2.visible = True
+                p.visible = True
+                next_button.visible = True
+                previous_button.visible = True
+
+    except Exception as e:
+        print("An error occurred.")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error details: {e}")
         paragraph.text = "Invalid input. Try again!"
         paragraph.visible = True
+
 
 def filter_and_print_ranges(list1, list2, min_range, max_range):
     # Filter the entries in both lists that fall within the specified range
     filtered_list1 = [tup for tup in list1 if all(min_range <= x <= max_range for x in tup)]
-    # print(f"ale: {filtered_list1[0:5]}")
     filtered_list2 = [tup for tup in list2 if all(min_range <= x <= max_range for x in tup)]
-    # print(f"ale: {filtered_list2[0:5]}")
-
     # Print the filtered entries
     filt1 = []
     filt2 = []
@@ -79,12 +101,7 @@ def filter_and_print_ranges(list1, list2, min_range, max_range):
         new_min = min(min(tup) for tup in all_filtered_entries)
         new_max = max(max(tup) for tup in all_filtered_entries)
         print(f"\nScaled Down Range: {new_min} - {new_max}")
-    # else:
-    #     print("\nNo entries found within the specified range.")
     return filt1, filt2, new_min, new_max
-
-q = flatten_and_sort_lists(criteria_regions_1, criteria_regions_2)
-end_part = q[-1] # maximum chromosome value for both chromosomes
 
 
 
@@ -93,11 +110,6 @@ p.xaxis.axis_label = "Position in Mb"
 p.yaxis.axis_label = "Chromosome"
 p.grid.grid_line_color = None
 
-# Create layout with plot and buttons
-layout = column(p)
-
-# Add layout to the current document
-curdoc().add_root(layout)
 
 # Function to update the display with new bars
 def update_display():
@@ -148,11 +160,8 @@ next_button.on_click(next_button_callback)
 
 previous_button = Button(label="Previous", button_type="success")
 previous_button.on_click(previous_button_callback)
-
-# Add buttons to layout
-layout.children.append(next_button)
-layout.children.append(previous_button)
-print(f"last: {q[-1]}")
+next_button.visible = False
+previous_button.visible = False
 
 
 def dropdown_callback(attr, old, new):
@@ -181,11 +190,12 @@ dropdown2.on_change('value', dropdown_callback)
 text_input = TextInput(placeholder="Type Population pair names comma separated e.g JPT,ITU",width=400)
 
 # Create button widget
-button = Button(label="Search")
+button = Button(label="Load")
 
 button.on_click(update_list)
+interface2 = column(dropdown, dropdown2, text_input, paragraph, button,paragraph2, p, next_button, previous_button)
 
-interface2 = column(dropdown, dropdown2, text_input, paragraph, button, p, next_button, previous_button)
+
 
 def ret2():
     return interface2

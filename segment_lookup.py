@@ -3,14 +3,14 @@ from bokeh.io import curdoc
 from bokeh.models import TextInput, Button, Div, Select
 from bokeh.layouts import column
 import pandas as pd
-from utils import concatentated_dict,pop_chrom_dict
+from utils import concatenated_dict,pop_chrom_dict
 
 
 selected_number = 1
 
 chrom_dict_values = {i: 250000000 for i in range(1, 23)}
 
-dictionary = concatentated_dict
+dictionary = concatenated_dict
 pop_chrome = pop_chrom_dict
 
 def update_list():
